@@ -14,7 +14,6 @@ import javafx.scene.image.ImageView;
 
 import tools.Utils;
 import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 
 
@@ -25,9 +24,9 @@ public class FXMLController implements Initializable {
 
     
 	// a timer for acquiring the video stream
-	private ScheduledExecutorService timer;
+	private static ScheduledExecutorService timer;
 	// the OpenCV object that realizes the video capture
-	private VideoCapture capture = new VideoCapture();
+	private static VideoCapture capture = new VideoCapture();
 	// a flag to change the button behavior
 	private boolean cameraActive = false;
 	// the id of the camera to be used
@@ -119,15 +118,15 @@ public class FXMLController implements Initializable {
 	/**
 	 * Stop the acquisition from the camera and release all the resources
 	 */
-	private void stopAcquisition()
+	public static void stopAcquisition()
 	{
-		if (this.timer!=null && !this.timer.isShutdown())
+		if (timer!=null && !timer.isShutdown())
 		{
 			try
 			{
 				// stop the timer
-				this.timer.shutdown();
-				this.timer.awaitTermination(33, TimeUnit.MILLISECONDS);
+				timer.shutdown();
+				timer.awaitTermination(33, TimeUnit.MILLISECONDS);
 			}
 			catch (InterruptedException e)
 			{
@@ -136,10 +135,10 @@ public class FXMLController implements Initializable {
 			}
 		}
 		
-		if (this.capture.isOpened())
+		if ( capture.isOpened())
 		{
 			// release the camera
-			this.capture.release();
+			capture.release();
 		}
 	}
 	
