@@ -11,8 +11,10 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 
 import tools.Utils;
 import org.opencv.core.Mat;
@@ -30,6 +32,8 @@ public class FXMLController implements Initializable {
     @FXML
     private ImageView currentFrame;
 
+    @FXML
+    private HBox videoContainer;
     @FXML
     private JFXCheckBox haarClassifier;
     
@@ -54,6 +58,9 @@ public class FXMLController implements Initializable {
     @FXML
     void launchCam(ActionEvent event) {
         if (!this.cameraActive) {
+            videoContainer.alignmentProperty().set(Pos.TOP_LEFT);
+            currentFrame.fitHeightProperty().set(768);
+            currentFrame.fitWidthProperty().set(1024);
             // start the video capture
             this.capture.open(cameraId);
 
@@ -78,7 +85,7 @@ public class FXMLController implements Initializable {
                 this.timer.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MILLISECONDS);
 
                 // update the button content
-                this.launchButton.setText("Stop Camera");
+                this.launchButton.setText("ARRETER CAPTURE");
             } else {
                 // log the error
                 System.err.println("Impossible to open the camera connection...");
@@ -87,7 +94,10 @@ public class FXMLController implements Initializable {
             // the camera is not active at this point
             this.cameraActive = false;
             // update again the button content
-            this.launchButton.setText("Start Camera");
+            this.launchButton.setText("LANCER CAPTURE");
+            videoContainer.alignmentProperty().set(Pos.CENTER);
+            currentFrame.fitHeightProperty().set(100);
+            currentFrame.fitWidthProperty().set(100);
 
             // stop the timer
             this.stopAcquisition();
@@ -161,7 +171,7 @@ public class FXMLController implements Initializable {
             this.lbpClassifier.setSelected(false);
         }
 
-        this.checkboxSelection("D:/pfe/boukerrouch/Face_Detector/src/main/resources/haarcascades/haarcascade_frontalface_alt.xml");//.getPath());
+        this.checkboxSelection("/haarcascades/haarcascade_frontalface_alt.xml");
     }
 
     /**
@@ -175,10 +185,7 @@ public class FXMLController implements Initializable {
             this.haarClassifier.setSelected(false);
         }
 
-        //this.checkboxSelection("D:/pfe/boukerrouch/Face_Detector/src/main/resources/haarcascades/haarcascade_frontalface_alt.xml");//.getPath());
-        URL resource = getClass().getResource("/lbpcascades/lbpcascade_frontalface.xml");
-        
-        this.checkboxSelection(resource.getPath());
+        this.checkboxSelection("/lbpcascades/lbpcascade_frontalface.xml");
     }
 
     private void checkboxSelection(String classifierPath)
