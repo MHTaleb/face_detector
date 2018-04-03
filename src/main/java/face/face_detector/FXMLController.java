@@ -2,11 +2,20 @@ package face.face_detector;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.controls.JFXTextField;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.IntBuffer;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -15,6 +24,16 @@ import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javax.imageio.ImageIO;
+import org.bytedeco.javacpp.DoublePointer;
+import org.bytedeco.javacpp.IntPointer;
+import org.bytedeco.javacpp.opencv_core;
+import org.bytedeco.javacpp.opencv_core.MatVector;
+import org.bytedeco.javacpp.opencv_face.FaceRecognizer;
+import org.bytedeco.javacpp.opencv_face.FisherFaceRecognizer;
+import static org.bytedeco.javacpp.opencv_imgcodecs.CV_LOAD_IMAGE_GRAYSCALE;
+import static org.bytedeco.javacpp.opencv_imgcodecs.imread;
+import static org.opencv.core.CvType.CV_32SC1;
 
 import tools.Utils;
 import org.opencv.core.Mat;
@@ -36,10 +55,10 @@ public class FXMLController implements Initializable {
     private HBox videoContainer;
     @FXML
     private JFXCheckBox haarClassifier;
-    
+
     @FXML
     private JFXCheckBox lbpClassifier;
-    
+
     private CascadeClassifier faceCascade;
     private int absoluteFaceSize;
 
@@ -54,9 +73,13 @@ public class FXMLController implements Initializable {
 
     @FXML
     private JFXButton launchButton;
+    
+    @FXML
+    private JFXTextField username;
 
     @FXML
     void launchCam(ActionEvent event) {
+
         if (!this.cameraActive) {
             videoContainer.alignmentProperty().set(Pos.TOP_LEFT);
             currentFrame.fitHeightProperty().set(768);
@@ -78,6 +101,12 @@ public class FXMLController implements Initializable {
                         // convert and show the frame
                         Image imageToShow = Utils.mat2Image(frame);
                         updateImageView(currentFrame, imageToShow);
+                        try {
+                            detectUser();
+                        } catch (Exception exception) {
+                            exception.printStackTrace();
+                            System.out.println("detection exception");
+                        }
                     }
                 };
 
@@ -101,6 +130,23 @@ public class FXMLController implements Initializable {
 
             // stop the timer
             this.stopAcquisition();
+        }
+    }
+
+    int count = 0;
+    private void saveToFile(Image image) {
+        count++;
+        File outputFile = new File(trainingDir+username.getText()+"-"+count+".png");
+        try {
+            outputFile.createNewFile();
+        } catch (IOException ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);
+        try {
+            ImageIO.write(bImage, "png", outputFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -188,16 +234,15 @@ public class FXMLController implements Initializable {
         this.checkboxSelection("/lbpcascades/lbpcascade_frontalface.xml");
     }
 
-    private void checkboxSelection(String classifierPath)
-	{
-            System.out.println("path : "+classifierPath);
-		// load the classifier(s)
-		faceCascade.load(classifierPath);
-		
-		// now the video capture can start
-		launchButton.setDisable(false);
-	}
-	
+    private void checkboxSelection(String classifierPath) {
+        System.out.println("path : " + classifierPath);
+        // load the classifier(s)
+        faceCascade.load(classifierPath);
+
+        // now the video capture can start
+        launchButton.setDisable(false);
+    }
+
     /**
      * Stop the acquisition from the camera and release all the resources
      */
@@ -236,10 +281,110 @@ public class FXMLController implements Initializable {
         this.stopAcquisition();
     }
 
+    String trainingDir = "c:/trainingDir/";
+
+    @FXML
+    public void saveUser(Event event) {
+        Image imagev = currentFrame.getImage();
+
+        File file = new File(trainingDir);
+        if (!file.exists()) {
+            if (file.mkdir()) {
+                System.out.println("Directory is created!");
+            } else {
+                System.out.println("Failed to create directory!");
+            }
+        }
+
+        saveToFile(imagev);
+
+    }
+
+    public void detectUser() throws NumberFormatException {
+       
+        Image imagev = currentFrame.getImage();
+
+        File file = new File(trainingDir);
+        if (!file.exists()) {
+            if (file.mkdir()) {
+                System.out.println("Directory is created!");
+            } else {
+                System.out.println("Failed to create directory!");
+            }
+        }
+
+        File temp = new File("c:/temp");
+        if (!temp.exists()) {
+            if (temp.mkdir()) {
+                System.out.println("Directory is created!");
+            } else {
+                System.out.println("Failed to create directory!");
+            }
+        }
+        File outputFile = new File("c:/temp/0-current.png");
+        try {
+            if(outputFile.exists())outputFile.delete();
+            outputFile.createNewFile();
+        } catch (IOException ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        BufferedImage bImage = SwingFXUtils.fromFXImage(imagev, null);
+        try {
+            ImageIO.write(bImage, "png", outputFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        
+        opencv_core.Mat testImage = imread("c:/temp/0-current.png", CV_LOAD_IMAGE_GRAYSCALE);
+
+        File root = new File(trainingDir);
+
+        FilenameFilter imgFilter = new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                name = name.toLowerCase();
+                return name.endsWith(".jpg") || name.endsWith(".pgm") || name.endsWith(".png");
+            }
+        };
+
+        File[] imageFiles = root.listFiles(imgFilter);
+
+        MatVector images = new MatVector(imageFiles.length);
+
+        opencv_core.Mat labels = new opencv_core.Mat(imageFiles.length, 1, CV_32SC1);
+        IntBuffer labelsBuf = labels.createBuffer();
+
+        int counter = 0;
+
+        for (File image : imageFiles) {
+            opencv_core.Mat img = imread(image.getAbsolutePath(), CV_LOAD_IMAGE_GRAYSCALE);
+
+            int label = Integer.parseInt(image.getName().split("\\-")[0]);
+
+            images.put(counter, img);
+
+            labelsBuf.put(counter, label);
+
+            counter++;
+        }
+
+        FaceRecognizer faceRecognizer = FisherFaceRecognizer.create();
+        // FaceRecognizer faceRecognizer = EigenFaceRecognizer.create();
+        // FaceRecognizer faceRecognizer = LBPHFaceRecognizer.create();
+
+        faceRecognizer.train(images, labels);
+
+        IntPointer label = new IntPointer(1);
+        DoublePointer confidence = new DoublePointer(1);
+        faceRecognizer.predict(testImage, label, confidence);
+        int predictedLabel = label.get(0);
+
+        System.out.println("Predicted label: " + predictedLabel);
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.faceCascade = new CascadeClassifier();
-		this.absoluteFaceSize = 0;
-		
+        this.absoluteFaceSize = 0;
+
     }
 }
