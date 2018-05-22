@@ -201,7 +201,7 @@ public class FXMLController implements Initializable {
         // each rectangle in faces is a face: draw them!
         Rect[] facesArray = faces.toArray();
         for (int i = 0; i < facesArray.length; i++) {
-            Imgproc.rectangle(frame, facesArray[i].tl(), facesArray[i].br(), new Scalar(0, 255, 0), 3);
+            Imgproc.rectangle(frame, facesArray[i].tl(), facesArray[i].br(), new Scalar(0, 255, 0), 1);
         }
 
     }
@@ -300,6 +300,7 @@ public class FXMLController implements Initializable {
 
     }
 
+    // reconnaissance
     public void detectUser() throws NumberFormatException {
        
         Image imagev = currentFrame.getImage();
@@ -335,6 +336,7 @@ public class FXMLController implements Initializable {
             throw new RuntimeException(e);
         }
         
+        // reconnaissance begin
         opencv_core.Mat testImage = imread("c:/temp/0-current.png", CV_LOAD_IMAGE_GRAYSCALE);
 
         File root = new File(trainingDir);
