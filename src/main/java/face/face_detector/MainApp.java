@@ -1,14 +1,21 @@
 package face.face_detector;
 
+import controllers.GenericEntityController;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import model.Image;
 import org.apache.commons.io.FileUtils;
+import services.ImageService;
 
 public class MainApp extends Application {
 
@@ -20,7 +27,7 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/Scene.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/Main.fxml"));
 
         Scene scene = new Scene(root);
         scene.getStylesheets().add("/styles/Styles.css");
@@ -28,6 +35,18 @@ public class MainApp extends Application {
         stage.setOnCloseRequest(e -> {
             FXMLController.stopAcquisition();
         });
+        
+        try {
+            ImageService.deleteFolderContentOrCreate(new File("c:/trainingDir"));
+            GenericEntityController<Image> imageController = new GenericEntityController<>(Image.class);
+            List<Image> images = imageController.findAll();
+            images.parallelStream().forEach(image -> {
+                
+            });
+            
+        } catch (IOException e) {
+            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, e.getMessage());
+        }
 
         URL inputUrl = getClass().getResource("/haarcascades/haarcascade_frontalface_alt.xml");
         File dest = new File("/haarcascades/haarcascade_frontalface_alt.xml");

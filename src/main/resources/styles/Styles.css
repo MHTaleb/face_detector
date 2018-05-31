@@ -4,3 +4,79 @@
 .jfx-check-box .text {
 	-fx-text-color : #fff;
 }
+
+.table-view {
+    -fx-background-color: #005555;
+    -fx-text-fill: #fdfefe;
+  }
+.tree-table-view:row-selection:constrained-resize .column-header-background .nested-column-header .table-column .label,
+.table-view:row-selection:constrained-resize .column-header-background .nested-column-header .table-column .label
+{
+    -fx-background-color: #223333;
+    -fx-text-fill: #fdfefe;
+  }
+  .tree-table-view:row-selection:constrained-resize .column-header-background .nested-column-header .table-column,
+  .tree-table-view:row-selection:constrained-resize .column-header-background .filler,
+  .tree-table-view:row-selection:constrained-resize .column-header-background .show-hide-columns-button,
+  .tree-table-view:row-selection:constrained-resize .virtual-flow .scroll-bar:vertical,
+  .table-view:row-selection:constrained-resize .column-header-background .nested-column-header .table-column,
+  .table-view:row-selection:constrained-resize .column-header-background .filler,
+  .table-view:row-selection:constrained-resize .column-header-background .show-hide-columns-button,
+  .table-view:row-selection:constrained-resize .virtual-flow .scroll-bar:vertical{
+    -fx-background-color: #223333;
+      
+  }
+  .table-row-cell:filled:selected, .table-row-cell:filled > .table-cell:selected {
+    -fx-background: rgb(34, 51, 51);
+    -fx-table-cell-border-color: derive(rgb(34, 51, 51), 20%);
+}
+
+
+  .table-view:row-selection:constrained-resize .virtual-flow .clipped-container .sheet .table-row-cell:filled:odd {
+    -fx-background-color: derive(#c1c1c1,24%);      
+  }
+  .table-view:row-selection:constrained-resize .virtual-flow .clipped-container .sheet .table-row-cell:filled:odd:selected {
+    -fx-background-color: derive(#c1c1c1,83%);      
+  }
+  .table-view:row-selection:constrained-resize .virtual-flow .clipped-container .sheet .table-row-cell:filled:odd .table-column:filled:odd .text{
+    -fx-text-fill: #222222;
+    -fx-fill: #222222;
+      
+  }
+  
+  
+  .table-view:row-selection:constrained-resize .virtual-flow .clipped-container .sheet .table-row-cell:filled:even {
+    -fx-background-color: derive(rgb(34, 51, 51),95%);      
+  }
+  .table-view:row-selection:constrained-resize .virtual-flow .clipped-container .sheet .table-row-cell:filled:even:selected {
+    -fx-background-color: derive(rgb(34, 51, 51),37%);      
+  }
+  .table-view:row-selection:constrained-resize .virtual-flow .clipped-container .sheet .table-row-cell:filled:even .table-column:filled:even .text{
+    -fx-text-fill: #fdfefe;
+    -fx-fill: #fdfefe;
+      
+  }
+  
+  .table-view:row-selection:constrained-resize .placeholder,.table-view:row-selection:constrained-resize .placeholder .label{
+      -fx-text-fill: #fdfefe;
+      
+  }
+  .jfx-text-field {
+      -fx-prompt-text-fill: #6f8e8e;
+  }
+  .mainFxmlClass{
+      -fx-background-color: #dbf3f3;
+  }
+  .scroll-pane, .scroll-pane .scroll-bar:horizontal,.scroll-pane .scroll-bar:vertical,.scroll-pane .viewport{
+      -fx-background-color: #dbf3f3;
+  }
+  
+  .scroll-pane .scroll-bar:horizontal .thumb{
+      -fx-background-color: #6f8e8e;
+      -fx-background-radius: 0px;   
+  }
+  
+  .scroll-pane .scroll-bar:horizontal .increment-button .increment-arrow{
+      -fx-background-color: #6f8e8e;
+      -fx-background-radius: 0px;   
+  }

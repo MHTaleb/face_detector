@@ -17,30 +17,35 @@
          <children>
             <HBox alignment="BOTTOM_LEFT" spacing="17.0" style="-fx-background-color: #128869;">
                <children>
-                  <JFXCheckBox fx:id="haarClassifier" checkedColor="#7a87ab" onAction="#haarSelected" prefHeight="30.0" prefWidth="138.0" text="Haar" textFill="WHITE" unCheckedColor="WHITE" />
-                  <JFXCheckBox fx:id="lbpClassifier" checkedColor="#7a87ab" onAction="#lbpSelected" prefHeight="28.0" prefWidth="144.0" styleClass="jfx-check-box" stylesheets="@../styles/Styles.css" text="LBP" textFill="WHITE" unCheckedColor="#f8f1f1" />
-                  <JFXButton fx:id="launchButton" alignment="BOTTOM_LEFT" buttonType="RAISED" onAction="#launchCam" prefHeight="30.0" prefWidth="275.0" ripplerFill="#1b0c68" text="LANCER CAMERA" textFill="WHITE">
-                     <font>
-                        <Font name="Arial Black" size="13.0" />
-                     </font>
-                  </JFXButton>
-                  <Separator orientation="VERTICAL" prefHeight="30.0" prefWidth="54.0" />
-                  <JFXTextField fx:id="username" focusColor="WHITE" labelFloat="true" prefHeight="30.0" prefWidth="320.0" promptText="Utilisateur" style="-fx-text-fill: #fff; -fx-text-weight: 5;" unFocusColor="#b9adad" />
-                  <JFXButton alignment="BOTTOM_LEFT" buttonType="RAISED" onAction="#saveUser" prefHeight="30.0" prefWidth="239.0" ripplerFill="#1b0c68" text="SAUVEGARDER" textFill="WHITE">
-                     <font>
-                        <Font name="Arial Black" size="13.0" />
-                     </font>
-                  </JFXButton>
+                  <HBox spacing="25.0">
+                     <children>
+                        <JFXCheckBox fx:id="haarClassifier" checkedColor="#7a87ab" onAction="#haarSelected" prefHeight="30.0" prefWidth="138.0" text="Haar" textFill="WHITE" unCheckedColor="WHITE" />
+                        <JFXCheckBox fx:id="lbpClassifier" checkedColor="#7a87ab" onAction="#lbpSelected" prefHeight="28.0" prefWidth="144.0" styleClass="jfx-check-box" stylesheets="@../styles/Styles.css" text="LBP" textFill="WHITE" unCheckedColor="#f8f1f1" />
+                        <Separator orientation="VERTICAL" prefHeight="30.0" prefWidth="24.0" />
+                     </children>
+                     <padding>
+                        <Insets left="30.0" />
+                     </padding>
+                  </HBox>
+                  <HBox alignment="TOP_RIGHT" spacing="25.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <JFXButton fx:id="launchButton" alignment="BOTTOM_LEFT" buttonType="RAISED" onAction="#launchCam" prefHeight="30.0" prefWidth="170.0" ripplerFill="#1b0c68" text="LANCER CAMERA" textFill="WHITE">
+                           <font>
+                              <Font name="Arial Black" size="13.0" />
+                           </font>
+                        </JFXButton>
+                     </children>
+                  </HBox>
                </children>
                <padding>
                   <Insets bottom="17.0" left="20.0" right="17.0" top="17.0" />
                </padding>
             </HBox>
-            <HBox>
+            <HBox prefHeight="626.0" prefWidth="1292.0" spacing="15.0" VBox.vgrow="ALWAYS">
                <children>
                   <VBox prefHeight="702.0" prefWidth="350.0" spacing="20.0">
                      <children>
-                        <JFXTextField promptText="Utilisateur" />
+                        <JFXTextField labelFloat="true" promptText="Rechercher" />
                         <TableView prefHeight="333.0" prefWidth="350.0">
                           <columns>
                             <TableColumn prefWidth="75.0" text="ID" />
@@ -50,16 +55,22 @@
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                            </columnResizePolicy>
                         </TableView>
-                        <JFXTextField promptText="Nom" />
-                        <JFXTextField promptText="Prénom" />
+                        <JFXTextField labelFloat="true" promptText="Nom" />
+                        <JFXTextField labelFloat="true" promptText="Prénom" />
                         <DatePicker prefHeight="25.0" prefWidth="367.0" promptText="date Naissance" />
                         <JFXTextField promptText="Telephone" />
+                        <JFXTextField fx:id="username" focusColor="WHITE" labelFloat="true" prefHeight="30.0" prefWidth="320.0" promptText="ID" style="-fx-text-fill: #fff; -fx-text-weight: 5;" unFocusColor="#b9adad" />
+                        <JFXButton alignment="CENTER" buttonType="RAISED" onAction="#saveUser" prefHeight="25.0" prefWidth="329.0" ripplerFill="#1b0c68" text="SAUVEGARDER" textFill="#265e3a">
+                           <font>
+                              <Font name="Arial Black" size="13.0" />
+                           </font>
+                        </JFXButton>
                      </children>
                      <padding>
                         <Insets left="10.0" right="10.0" top="20.0" />
                      </padding>
                   </VBox>
-                  <HBox fx:id="videoContainer" alignment="CENTER" prefHeight="770.0" prefWidth="803.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS">
+                  <HBox fx:id="videoContainer" alignment="CENTER" prefHeight="770.0" prefWidth="803.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
                      <children>
                         <ImageView fx:id="currentFrame" fitHeight="96.0" fitWidth="101.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <image>
@@ -71,6 +82,15 @@
                         </ImageView>
                      </children>
                   </HBox>
+               </children>
+            </HBox>
+            <HBox prefHeight="40.0" prefWidth="1292.0" VBox.vgrow="NEVER">
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="40.0" prefWidth="2000.0" text="Detected User" textAlignment="CENTER" HBox.hgrow="ALWAYS">
+                     <font>
+                        <Font name="Calibri Bold" size="33.0" />
+                     </font>
+                  </Label>
                </children>
             </HBox>
          </children>

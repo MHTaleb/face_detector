@@ -29,8 +29,8 @@ import org.bytedeco.javacpp.DoublePointer;
 import org.bytedeco.javacpp.IntPointer;
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacpp.opencv_core.MatVector;
+import org.bytedeco.javacpp.opencv_face.EigenFaceRecognizer;
 import org.bytedeco.javacpp.opencv_face.FaceRecognizer;
-import org.bytedeco.javacpp.opencv_face.FisherFaceRecognizer;
 import static org.bytedeco.javacpp.opencv_imgcodecs.CV_LOAD_IMAGE_GRAYSCALE;
 import static org.bytedeco.javacpp.opencv_imgcodecs.imread;
 import static org.opencv.core.CvType.CV_32SC1;
@@ -73,7 +73,7 @@ public class FXMLController implements Initializable {
 
     @FXML
     private JFXButton launchButton;
-    
+
     @FXML
     private JFXTextField username;
 
@@ -101,12 +101,7 @@ public class FXMLController implements Initializable {
                         // convert and show the frame
                         Image imageToShow = Utils.mat2Image(frame);
                         updateImageView(currentFrame, imageToShow);
-                        try {
-                            detectUser();
-                        } catch (Exception exception) {
-                            exception.printStackTrace();
-                            System.out.println("detection exception");
-                        }
+
                     }
                 };
 
@@ -134,9 +129,10 @@ public class FXMLController implements Initializable {
     }
 
     int count = 0;
+
     private void saveToFile(Image image) {
         count++;
-        File outputFile = new File(trainingDir+username.getText()+"-"+count+".png");
+        File outputFile = new File(trainingDir + username.getText() + "-" + count + ".png");
         try {
             outputFile.createNewFile();
         } catch (IOException ex) {
@@ -150,6 +146,7 @@ public class FXMLController implements Initializable {
         }
     }
 
+    int detectCount = 5;
     private Mat grabFrame() {
         // init everything
         Mat frame = new Mat();
@@ -165,7 +162,16 @@ public class FXMLController implements Initializable {
 
                     // face detection
                     detectAndDisplay(frame);
-
+                    try {
+                        detectCount++;
+                        if(detectCount % 20 == 0 ){
+                            detectUser();
+                            detectCount = 1 ;
+                        }
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                        System.out.println("detection exception");
+                    }
                 }
 
             } catch (Exception e) {
@@ -201,7 +207,7 @@ public class FXMLController implements Initializable {
         // each rectangle in faces is a face: draw them!
         Rect[] facesArray = faces.toArray();
         for (int i = 0; i < facesArray.length; i++) {
-            Imgproc.rectangle(frame, facesArray[i].tl(), facesArray[i].br(), new Scalar(0, 255, 0), 1);
+            Imgproc.rectangle(frame, facesArray[i].tl(), facesArray[i].br(), new Scalar(0, 255, 0), 3);
         }
 
     }
@@ -300,9 +306,8 @@ public class FXMLController implements Initializable {
 
     }
 
-    // reconnaissance
     public void detectUser() throws NumberFormatException {
-       
+
         Image imagev = currentFrame.getImage();
 
         File file = new File(trainingDir);
@@ -324,7 +329,9 @@ public class FXMLController implements Initializable {
         }
         File outputFile = new File("c:/temp/0-current.png");
         try {
-            if(outputFile.exists())outputFile.delete();
+            if (outputFile.exists()) {
+                outputFile.delete();
+            }
             outputFile.createNewFile();
         } catch (IOException ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
@@ -335,8 +342,7 @@ public class FXMLController implements Initializable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        
-        // reconnaissance begin
+
         opencv_core.Mat testImage = imread("c:/temp/0-current.png", CV_LOAD_IMAGE_GRAYSCALE);
 
         File root = new File(trainingDir);
@@ -369,8 +375,8 @@ public class FXMLController implements Initializable {
             counter++;
         }
 
-        FaceRecognizer faceRecognizer = FisherFaceRecognizer.create();
-        // FaceRecognizer faceRecognizer = EigenFaceRecognizer.create();
+        FaceRecognizer faceRecognizer = EigenFaceRecognizer.create();
+        // FaceRecognizer faceRecognizer = FisherFaceRecognizer.create();
         // FaceRecognizer faceRecognizer = LBPHFaceRecognizer.create();
 
         faceRecognizer.train(images, labels);
