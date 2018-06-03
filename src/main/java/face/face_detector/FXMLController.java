@@ -2,6 +2,7 @@ package face.face_detector;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -15,16 +16,22 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javax.imageio.ImageIO;
+import mysql.ImagesMysql;
+import mysql.User;
+import mysql.UsersMysql;
 import org.bytedeco.javacpp.DoublePointer;
 import org.bytedeco.javacpp.IntPointer;
 import org.bytedeco.javacpp.opencv_core;
@@ -76,6 +83,16 @@ public class FXMLController implements Initializable {
 
     @FXML
     private JFXTextField username;
+    @FXML
+    private JFXTextField nom;
+    @FXML
+    private JFXTextField prenom;
+    @FXML
+    private JFXDatePicker date;
+    @FXML
+    private JFXTextField telephone;
+    @FXML
+    private Label detected;
 
     @FXML
     void launchCam(ActionEvent event) {
@@ -133,6 +150,7 @@ public class FXMLController implements Initializable {
     private void saveToFile(Image image) {
         count++;
         File outputFile = new File(trainingDir + username.getText() + "-" + count + ".png");
+
         try {
             outputFile.createNewFile();
         } catch (IOException ex) {
@@ -144,9 +162,12 @@ public class FXMLController implements Initializable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        ImagesMysql.insert(trainingDir + username.getText() + "-" + count + ".png", trainingDir + username.getText() + "-" + count + ".png");
+        UsersMysql.insert(nom.getText(), prenom.getText(), telephone.getText(), date.getValue().toString(), Integer.parseInt(username.getText()));
     }
 
     int detectCount = 5;
+
     private Mat grabFrame() {
         // init everything
         Mat frame = new Mat();
@@ -164,9 +185,9 @@ public class FXMLController implements Initializable {
                     detectAndDisplay(frame);
                     try {
                         detectCount++;
-                        if(detectCount % 20 == 0 ){
+                        if (detectCount % 20 == 0) {
                             detectUser();
-                            detectCount = 1 ;
+                            detectCount = 1;
                         }
                     } catch (Exception exception) {
                         exception.printStackTrace();
@@ -306,7 +327,7 @@ public class FXMLController implements Initializable {
 
     }
 
-    public void detectUser() throws NumberFormatException {
+    public synchronized void detectUser() throws NumberFormatException {
 
         Image imagev = currentFrame.getImage();
 
@@ -387,6 +408,25 @@ public class FXMLController implements Initializable {
         int predictedLabel = label.get(0);
 
         System.out.println("Predicted label: " + predictedLabel);
+
+        
+        Task<Void> task = new Task<Void>() {
+
+            @Override
+            protected Void call() throws Exception {
+
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        User user = UsersMysql.read(predictedLabel, detected);
+                         detected.setText(user.getNom() + " "+user.getPrenom());
+                    }
+                });
+
+                return null;
+            }
+        };
+        task.run();
     }
 
     @Override

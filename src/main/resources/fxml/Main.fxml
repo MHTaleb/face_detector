@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.effect.*?>
-<?import javafx.scene.image.*?>
-<?import com.jfoenix.controls.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXCheckBox?>
+<?import com.jfoenix.controls.JFXDatePicker?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="766.0" prefWidth="1292.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="face.face_detector.FXMLController">
+<AnchorPane id="AnchorPane" prefHeight="766.0" prefWidth="1292.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="face.face_detector.FXMLController">
     <children>
       <VBox alignment="TOP_CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -55,11 +61,11 @@
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                            </columnResizePolicy>
                         </TableView>
-                        <JFXTextField labelFloat="true" promptText="Nom" />
-                        <JFXTextField labelFloat="true" promptText="Prénom" />
-                        <DatePicker prefHeight="25.0" prefWidth="367.0" promptText="date Naissance" />
-                        <JFXTextField promptText="Telephone" />
-                        <JFXTextField fx:id="username" focusColor="WHITE" labelFloat="true" prefHeight="30.0" prefWidth="320.0" promptText="ID" style="-fx-text-fill: #fff; -fx-text-weight: 5;" unFocusColor="#b9adad" />
+                        <JFXTextField fx:id="nom" labelFloat="true" promptText="Nom" />
+                        <JFXTextField fx:id="prenom" labelFloat="true" promptText="Prénom" />
+                        <JFXDatePicker fx:id="date" prefHeight="25.0" prefWidth="556.0" />
+                        <JFXTextField fx:id="telephone" promptText="Telephone" />
+                        <JFXTextField fx:id="username" labelFloat="true" prefHeight="30.0" prefWidth="320.0" promptText="ID" style="-fx-text-weight: 5;" />
                         <JFXButton alignment="CENTER" buttonType="RAISED" onAction="#saveUser" prefHeight="25.0" prefWidth="329.0" ripplerFill="#1b0c68" text="SAUVEGARDER" textFill="#265e3a">
                            <font>
                               <Font name="Arial Black" size="13.0" />
@@ -86,7 +92,7 @@
             </HBox>
             <HBox prefHeight="40.0" prefWidth="1292.0" VBox.vgrow="NEVER">
                <children>
-                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="40.0" prefWidth="2000.0" text="Detected User" textAlignment="CENTER" HBox.hgrow="ALWAYS">
+                  <Label fx:id="detected" alignment="CENTER" contentDisplay="CENTER" prefHeight="40.0" prefWidth="2000.0" text="Detected User" textAlignment="CENTER" HBox.hgrow="ALWAYS">
                      <font>
                         <Font name="Calibri Bold" size="33.0" />
                      </font>
