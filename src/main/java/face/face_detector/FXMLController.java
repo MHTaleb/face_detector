@@ -410,8 +410,8 @@ public class FXMLController implements Initializable {
             counter++;
         }
 
-       // FaceRecognizer faceRecognizer = EigenFaceRecognizer.create();
-         FaceRecognizer faceRecognizer = FisherFaceRecognizer.create();
+        // FaceRecognizer faceRecognizer = EigenFaceRecognizer.create();
+        FaceRecognizer faceRecognizer = FisherFaceRecognizer.create();
         // FaceRecognizer faceRecognizer = LBPHFaceRecognizer.create();
 
         faceRecognizer.train(images, labels);
@@ -420,26 +420,16 @@ public class FXMLController implements Initializable {
         DoublePointer confidence = new DoublePointer(1);
         faceRecognizer.predict(testImage, label, confidence);
         System.out.println(label.limit());
+        System.out.println("confidence = " + confidence.get());
         int predictedLabel = label.get(0);
+
+        if (confidence.get() > 1500) {
+            predictedLabel = -1;
+        }
 
         System.out.println("Predicted label: " + predictedLabel);
 
-        Task<Void> task = new Task<Void>() {
-
-            @Override
-            protected Void call() throws Exception {
-
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        User user = UsersMysql.read(predictedLabel, detected);
-                        detected.setText(user.getNom() + " " + user.getPrenom());
-                    }
-                });
-
-                return null;
-            }
-        };
+        Task<Void> task = new afficheResultatPrediction(predictedLabel, confidence.get());
         task.run();
     }
 
@@ -473,12 +463,60 @@ public class FXMLController implements Initializable {
                 image.fitHeightProperty().bind(
                         Bindings.when(colImage.widthProperty().lessThan(imageWidth + 40))
                                 .then(colImage.widthProperty().subtract(40).divide(3).multiply(4))
-                                .otherwise(imageWidth/3*4));
+                                .otherwise(imageWidth / 3 * 4));
                 imagesDTO.setImage(image);
                 images.add(imagesDTO);
             }
         }
 
         tableDataBase.getItems().addAll(images);
+    }
+
+    private class afficheResultatPrediction extends Task<Void> {
+
+        private final int predictedLabel;
+        private final double confidence;
+
+        public afficheResultatPrediction(int predictedLabel, double confidence) {
+            this.predictedLabel = predictedLabel;
+            this.confidence = confidence;
+        }
+
+        @Override
+        protected Void call() throws Exception {
+
+            Platform.runLater(new RunnableImpl(predictedLabel, confidence));
+
+            return null;
+        }
+
+        class RunnableImpl implements Runnable {
+
+            private final int predictedLabel;
+            private final double confidence;
+
+            public RunnableImpl(int predictedLabel, double confidence) {
+                this.predictedLabel = predictedLabel;
+                this.confidence = confidence;
+            }
+
+            @Override
+            public void run() {
+                User user = UsersMysql.read(predictedLabel, detected);
+                String displayMessage = user.getNom() + " " + user.getPrenom();
+                if (confidence < 300) {
+                    displayMessage += " taux exactitude 90%";
+                } else if (confidence < 500) {
+                    displayMessage += " taux exactitude 80%";
+                } else if (confidence < 800) {
+                    displayMessage += " taux exactitude 70%";
+                } else if (confidence < 1100) {
+                    displayMessage += " taux exactitude 60%";
+                } else if (confidence < 1500) {
+                    displayMessage += " taux exactitude 50%";
+                }
+                detected.setText(displayMessage);
+            }
+        }
     }
 }
