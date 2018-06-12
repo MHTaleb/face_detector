@@ -37,13 +37,15 @@ public class MainApp extends Application {
 
         String trainingDir = "c:/trainingDir/";
         final File file = new File(trainingDir);
-        if (!file.exists()) {
-            if (file.mkdir()) {
+        if (file.exists()) {
+            FileUtils.deleteDirectory(file);
+        }
+         if (file.mkdir()) {
                 System.out.println("Directory is created!");
             } else {
+                 
                 System.out.println("Failed to create directory!");
             }
-        }
         stage.setOnCloseRequest(e -> {
             FXMLController.stopAcquisition();
             try{

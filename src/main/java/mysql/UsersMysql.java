@@ -74,7 +74,7 @@ public class UsersMysql {
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
-        return new User(-1, "non", "non", "non", "non");
+        return new User(-1, "not", "found", "non", "non");
     }
 
    

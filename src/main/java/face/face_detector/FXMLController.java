@@ -6,10 +6,14 @@ import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -17,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
@@ -25,6 +30,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -36,8 +44,8 @@ import org.bytedeco.javacpp.DoublePointer;
 import org.bytedeco.javacpp.IntPointer;
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacpp.opencv_core.MatVector;
-import org.bytedeco.javacpp.opencv_face.EigenFaceRecognizer;
 import org.bytedeco.javacpp.opencv_face.FaceRecognizer;
+import org.bytedeco.javacpp.opencv_face.FisherFaceRecognizer;
 import static org.bytedeco.javacpp.opencv_imgcodecs.CV_LOAD_IMAGE_GRAYSCALE;
 import static org.bytedeco.javacpp.opencv_imgcodecs.imread;
 import static org.opencv.core.CvType.CV_32SC1;
@@ -93,6 +101,12 @@ public class FXMLController implements Initializable {
     private JFXTextField telephone;
     @FXML
     private Label detected;
+    @FXML
+    private TableView<ImagesDTO> tableDataBase;
+    @FXML
+    private TableColumn<ImagesDTO, Long> colId;
+    @FXML
+    private TableColumn<ImagesDTO, ImageView> colImage;
 
     @FXML
     void launchCam(ActionEvent event) {
@@ -396,8 +410,8 @@ public class FXMLController implements Initializable {
             counter++;
         }
 
-        FaceRecognizer faceRecognizer = EigenFaceRecognizer.create();
-        // FaceRecognizer faceRecognizer = FisherFaceRecognizer.create();
+       // FaceRecognizer faceRecognizer = EigenFaceRecognizer.create();
+         FaceRecognizer faceRecognizer = FisherFaceRecognizer.create();
         // FaceRecognizer faceRecognizer = LBPHFaceRecognizer.create();
 
         faceRecognizer.train(images, labels);
@@ -405,11 +419,11 @@ public class FXMLController implements Initializable {
         IntPointer label = new IntPointer(1);
         DoublePointer confidence = new DoublePointer(1);
         faceRecognizer.predict(testImage, label, confidence);
+        System.out.println(label.limit());
         int predictedLabel = label.get(0);
 
         System.out.println("Predicted label: " + predictedLabel);
 
-        
         Task<Void> task = new Task<Void>() {
 
             @Override
@@ -419,7 +433,7 @@ public class FXMLController implements Initializable {
                     @Override
                     public void run() {
                         User user = UsersMysql.read(predictedLabel, detected);
-                         detected.setText(user.getNom() + " "+user.getPrenom());
+                        detected.setText(user.getNom() + " " + user.getPrenom());
                     }
                 });
 
@@ -434,5 +448,37 @@ public class FXMLController implements Initializable {
         this.faceCascade = new CascadeClassifier();
         this.absoluteFaceSize = 0;
 
+        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colImage.setCellValueFactory(new PropertyValueFactory<>("image"));
+        colImage.setStyle("\"-fx-alignment: CENTER-RIGHT;\"");
+    }
+
+    @FXML
+    public void charger() throws FileNotFoundException {
+        List<ImagesDTO> images = new ArrayList<>();
+
+        File[] files = new File(trainingDir).listFiles();
+
+        for (File file : files) {
+            if (file.isFile()) {
+                final ImagesDTO imagesDTO = new ImagesDTO();
+                long id = Long.parseLong(file.getName().split("-")[0]);
+                imagesDTO.setId(id);
+                final ImageView image = new ImageView(new Image(new FileInputStream(file)));
+                double imageWidth = image.getImage().getWidth();
+                image.fitWidthProperty().bind(
+                        Bindings.when(colImage.widthProperty().lessThan(imageWidth + 40))
+                                .then(colImage.widthProperty().subtract(40))
+                                .otherwise(imageWidth));
+                image.fitHeightProperty().bind(
+                        Bindings.when(colImage.widthProperty().lessThan(imageWidth + 40))
+                                .then(colImage.widthProperty().subtract(40).divide(3).multiply(4))
+                                .otherwise(imageWidth/3*4));
+                imagesDTO.setImage(image);
+                images.add(imagesDTO);
+            }
+        }
+
+        tableDataBase.getItems().addAll(images);
     }
 }
