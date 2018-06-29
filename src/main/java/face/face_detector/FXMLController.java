@@ -423,7 +423,7 @@ public class FXMLController implements Initializable {
         System.out.println("confidence = " + confidence.get());
         int predictedLabel = label.get(0);
 
-        if (confidence.get() > 1500) {
+        if (confidence.get() > 1000) {
             predictedLabel = -1;
         }
 
@@ -504,17 +504,17 @@ public class FXMLController implements Initializable {
             public void run() {
                 User user = UsersMysql.read(predictedLabel, detected);
                 String displayMessage = user.getNom() + " " + user.getPrenom();
-                if (confidence < 300) {
-                    displayMessage += " taux exactitude 90%";
-                } else if (confidence < 500) {
-                    displayMessage += " taux exactitude 80%";
-                } else if (confidence < 800) {
-                    displayMessage += " taux exactitude 70%";
-                } else if (confidence < 1100) {
-                    displayMessage += " taux exactitude 60%";
-                } else if (confidence < 1500) {
-                    displayMessage += " taux exactitude 50%";
-                }
+//                if (confidence < 300) {
+//                    displayMessage += " taux exactitude 90%";
+//                } else if (confidence < 500) {
+//                    displayMessage += " taux exactitude 80%";
+//                } else if (confidence < 800) {
+//                    displayMessage += " taux exactitude 70%";
+//                } else if (confidence < 1100) {
+//                    displayMessage += " taux exactitude 60%";
+//                } else if (confidence < 1500) {
+//                    displayMessage += " taux exactitude 50%";
+//                }
                 detected.setText(displayMessage);
             }
         }

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXPasswordField?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="face.face_detector.LoginController">
+   <children>
+      <HBox alignment="CENTER" prefHeight="272.0" prefWidth="833.0">
+         <children>
+            <HBox alignment="CENTER" prefHeight="205.0" prefWidth="497.0" style="-fx-background-color: lightgreen;">
+               <children>
+                  <VBox alignment="CENTER" prefHeight="225.0" prefWidth="330.0">
+                     <children>
+                        <HBox alignment="CENTER" prefHeight="60.0" prefWidth="330.0">
+                           <children>
+                              <JFXTextField fx:id="username" labelFloat="true" prefHeight="22.0" prefWidth="218.0" promptText="UTILISATEUR">
+                                 <font>
+                                    <Font name="Calibri Bold" size="12.0" />
+                                 </font>
+                              </JFXTextField>
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="60.0" prefWidth="330.0">
+                           <children>
+                              <JFXPasswordField fx:id="password" labelFloat="true" prefHeight="22.0" prefWidth="218.0" promptText="MOT DE PASSE">
+                                 <font>
+                                    <Font name="Calibri Bold" size="12.0" />
+                                 </font>
+                              </JFXPasswordField>
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_RIGHT" prefHeight="31.0" prefWidth="330.0" spacing="100.0">
+                           <children>
+                              <JFXButton buttonType="RAISED" onAction="#reset" prefHeight="27.0" prefWidth="91.0" ripplerFill="#3a8a42" style="-fx-background-color: lightgrey;" text="annuler">
+                                 <font>
+                                    <Font name="Calibri Bold" size="13.0" />
+                                 </font>
+                              </JFXButton>
+                              <JFXButton buttonType="RAISED" onAction="#connect" prefHeight="25.0" prefWidth="135.0" ripplerFill="#3a8a42" style="-fx-background-color: #256688;" text="connecter" textFill="WHITE">
+                                 <font>
+                                    <Font name="Calibri Bold" size="12.0" />
+                                 </font>
+                              </JFXButton>
+                           </children>
+                           <padding>
+                              <Insets top="20.0" />
+                           </padding>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <ImageView fitHeight="277.0" fitWidth="373.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../icon/background.jpg" />
+               </image>
+            </ImageView>
+         </children>
+      </HBox>
+   </children>
+</VBox>
